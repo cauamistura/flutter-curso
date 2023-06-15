@@ -1,3 +1,5 @@
+import 'package:app_tasks/models/todo.dart';
+import 'package:app_tasks/widgets/todo_list_item.dart';
 import 'package:flutter/material.dart';
 
 class TodoListPage extends StatefulWidget {
@@ -9,7 +11,8 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController _taskController = TextEditingController();
-  List<String> tasks = [];
+
+  List<Todo> tasks = [];
 
   @override
   Widget build(BuildContext context) {
@@ -22,52 +25,51 @@ class _TodoListPageState extends State<TodoListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
+            Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: TextField(
-                        controller: _taskController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Tarefa',
-                          hintText: 'Ex. Nova tarefa',
-                        ),
-                      ),
+                Expanded(
+                  flex: 4,
+                  child: TextField(
+                    controller: _taskController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Tarefa',
+                      hintText: 'Ex. Nova tarefa',
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(16.5),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            tasks.add(_taskController.text);
-                          });
-                        },
-                        child: const Icon(
-                          Icons.add,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                ListView(
-                  shrinkWrap: true,
-                  children: [
-                    for (String task in tasks)
-                      ListTile(
-                        title: Text(task),
-                        onTap: () {
-                          print('Clicou na tarefa $task');
-                        },
-                      )
-                  ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(16.5),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Todo todo = Todo(
+                          title: _taskController.text,
+                          date: DateTime.now(),
+                        );
+                        tasks.add(todo);
+                      });
+                    },
+                    child: const Icon(
+                      Icons.add,
+                    ),
+                  ),
                 ),
               ],
+            ),
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (Todo task in tasks)
+                    TodoListItem(
+                      todo: task,
+                    ),
+                ],
+              ),
             ),
             Row(
               children: [
