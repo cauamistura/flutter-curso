@@ -14,6 +14,9 @@ class _TodoListPageState extends State<TodoListPage> {
 
   List<Todo> tasks = [];
 
+  Todo? deletedTodo;
+  int? positionDeleted;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,6 +70,7 @@ class _TodoListPageState extends State<TodoListPage> {
                   for (Todo task in tasks)
                     TodoListItem(
                       todo: task,
+                      onDelete: onDelete,
                     ),
                 ],
               ),
@@ -80,11 +84,7 @@ class _TodoListPageState extends State<TodoListPage> {
                   width: 8,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      tasks.clear();
-                    });
-                  },
+                  onPressed: showDiologConfirmedALLDeleted,
                   child: const Text('Limpar Tudo'),
                 ),
               ],
@@ -93,5 +93,63 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
     );
+  }
+
+  void onDelete(Todo task) {
+    deletedTodo = task;
+    positionDeleted = tasks.indexOf(task);
+
+    setState(() {
+      tasks.remove(task);
+    });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Tarefa ${task.title} foi excluida!'),
+      action: SnackBarAction(
+        label: 'Desfazer',
+        onPressed: () {
+          setState(() {
+            tasks.insert(positionDeleted!, deletedTodo!);
+          });
+        },
+      ),
+    ));
+  }
+
+  void deleteAllTasks(){
+    setState(() {
+      tasks.clear();
+    });
+  }
+
+  void showDiologConfirmedALLDeleted() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Confirmação'),
+              content: const Text('Se você fizer isto todas as tarefas salvas serão deletadas!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      deleteAllTasks();
+                      Navigator.of(context).pop();
+                    });
+                  },
+                  child: const Text('Apagar tudo',
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
+            ));
   }
 }
