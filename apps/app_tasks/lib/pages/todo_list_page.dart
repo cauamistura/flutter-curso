@@ -17,6 +17,12 @@ class _TodoListPageState extends State<TodoListPage> {
   Todo? deletedTodo;
   int? positionDeleted;
 
+
+  @override
+  void initState() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +57,7 @@ class _TodoListPageState extends State<TodoListPage> {
                       setState(() {
                         Todo todo = Todo(
                           title: _taskController.text,
-                          date: DateTime.now(),
+                          dateTime: DateTime.now(),
                         );
                         tasks.add(todo);
                       });
@@ -117,7 +123,7 @@ class _TodoListPageState extends State<TodoListPage> {
     ));
   }
 
-  void deleteAllTasks(){
+  void deleteAllTasks() {
     setState(() {
       tasks.clear();
     });
@@ -128,7 +134,8 @@ class _TodoListPageState extends State<TodoListPage> {
         context: context,
         builder: (context) => AlertDialog(
               title: const Text('Confirmação'),
-              content: const Text('Se você fizer isto todas as tarefas salvas serão deletadas!'),
+              content: const Text(
+                  'Se você fizer isto todas as tarefas salvas serão deletadas!'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -143,7 +150,8 @@ class _TodoListPageState extends State<TodoListPage> {
                       Navigator.of(context).pop();
                     });
                   },
-                  child: const Text('Apagar tudo',
+                  child: const Text(
+                    'Apagar tudo',
                     style: TextStyle(
                       color: Colors.red,
                     ),
