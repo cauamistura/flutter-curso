@@ -1,4 +1,5 @@
 import 'package:app_tasks/models/todo.dart';
+import 'package:app_tasks/repositories/todo_repository.dart';
 import 'package:app_tasks/widgets/todo_list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -11,16 +12,22 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController _taskController = TextEditingController();
+  final TodoRepository _todoRepository = TodoRepository();
 
-  List<Todo> tasks = [];
+  List<Todo> _tasks = [];
 
-  Todo? deletedTodo;
-  int? positionDeleted;
+  Todo? _deletedTodo;
+  int? _positionDeleted;
 
+  String? _errorText;
 
   @override
   void initState() {
-
+    _todoRepository.getTodoList().then((value) {
+      setState(() {
+        _tasks = value;
+      });
+    });
   }
 
   @override
@@ -40,10 +47,11 @@ class _TodoListPageState extends State<TodoListPage> {
                   flex: 4,
                   child: TextField(
                     controller: _taskController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
                       labelText: 'Tarefa',
                       hintText: 'Ex. Nova tarefa',
+                      errorText: _errorText,
                     ),
                   ),
                 ),
@@ -53,15 +61,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16.5),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        Todo todo = Todo(
-                          title: _taskController.text,
-                          dateTime: DateTime.now(),
-                        );
-                        tasks.add(todo);
-                      });
-                    },
+                    onPressed: onSaved,
                     child: const Icon(
                       Icons.add,
                     ),
@@ -73,7 +73,7 @@ class _TodoListPageState extends State<TodoListPage> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  for (Todo task in tasks)
+                  for (Todo task in _tasks)
                     TodoListItem(
                       todo: task,
                       onDelete: onDelete,
@@ -84,7 +84,7 @@ class _TodoListPageState extends State<TodoListPage> {
             Row(
               children: [
                 Expanded(
-                  child: Text('Você possui ${tasks.length} tarefas pendentes'),
+                  child: Text('Você possui ${_tasks.length} tarefas pendentes'),
                 ),
                 const SizedBox(
                   width: 8,
@@ -102,12 +102,13 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   void onDelete(Todo task) {
-    deletedTodo = task;
-    positionDeleted = tasks.indexOf(task);
+    _deletedTodo = task;
+    _positionDeleted = _tasks.indexOf(task);
 
     setState(() {
-      tasks.remove(task);
+      _tasks.remove(task);
     });
+    _todoRepository.saveTodoList(_tasks);
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -116,8 +117,9 @@ class _TodoListPageState extends State<TodoListPage> {
         label: 'Desfazer',
         onPressed: () {
           setState(() {
-            tasks.insert(positionDeleted!, deletedTodo!);
+            _tasks.insert(_positionDeleted!, _deletedTodo!);
           });
+          _todoRepository.saveTodoList(_tasks);
         },
       ),
     ));
@@ -125,8 +127,29 @@ class _TodoListPageState extends State<TodoListPage> {
 
   void deleteAllTasks() {
     setState(() {
-      tasks.clear();
+      _tasks.clear();
     });
+    _todoRepository.saveTodoList(_tasks);
+  }
+
+  void onSaved() {
+    if (_taskController.text.isEmpty) {
+      setState(() {
+        _errorText = 'Preencha sua tarefa!';
+      });
+      return;
+    }
+
+    setState(() {
+      Todo todo = Todo(
+        title: _taskController.text,
+        dateTime: DateTime.now(),
+      );
+      _tasks.add(todo);
+      _errorText = null;
+    });
+    _todoRepository.saveTodoList(_tasks);
+    _taskController.text = '';
   }
 
   void showDiologConfirmedALLDeleted() {
