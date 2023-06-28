@@ -1,10 +1,8 @@
-import 'dart:ffi';
-
 import 'package:currency_converter/api.dart';
+import 'package:currency_converter/pages/convert_page.dart';
+import 'package:currency_converter/pages/error_page.dart';
+import 'package:currency_converter/pages/loading_page.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,9 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double priceUSD = 0;
-  double priceEuro = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,21 +24,15 @@ class _HomePageState extends State<HomePage> {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-              return Center(
-                  child: LoadingAnimationWidget.fallingDot(
-                      color: Colors.black, size: 75));
+              return const LoadingPage();
             default:
               if (!snapshot.hasError) {
-                priceUSD = double.parse(snapshot.data?['USDBRL']['ask']);
-                priceEuro = double.parse(snapshot.data?['EURBRL']['ask']);
-                print('$priceEuro, $priceUSD');
-                return const Center(
-                  child: Text('Carregado...'),
+                return ConvertPage(
+                  priceUSD: double.parse(snapshot.data?['USDBRL']['ask']),
+                  priceEuro: double.parse(snapshot.data?['EURBRL']['ask']),
                 );
               } else {
-                return const Center(
-                  child: Text('Erro'),
-                );
+                return const ErrorPage();
               }
           }
         },

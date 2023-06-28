@@ -8,7 +8,7 @@ const String REQUEST =
 class API {
   static Future<Map> getData() async {
     http.Response response = await http.get(Uri.parse(REQUEST));
-    await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
     return json.decode(response.body);
   }
 }
