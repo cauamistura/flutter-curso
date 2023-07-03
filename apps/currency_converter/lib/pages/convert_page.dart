@@ -1,3 +1,4 @@
+import 'package:currency_converter/widgets/edit_currency.dart';
 import 'package:flutter/material.dart';
 
 class ConvertPage extends StatefulWidget {
@@ -11,10 +12,15 @@ class ConvertPage extends StatefulWidget {
   final double priceEuro;
 
   @override
-  State<ConvertPage> createState() => _ConvertPageState();
+  State<ConvertPage> createState() => _ConvertPageState(priceUSD, priceEuro);
 }
 
 class _ConvertPageState extends State<ConvertPage> {
+  _ConvertPageState(this.priceUSD, this.priceEuro);
+
+  final double priceUSD;
+  final double priceEuro;
+
   final TextEditingController realController = TextEditingController();
   final TextEditingController usdController = TextEditingController();
   final TextEditingController euroController = TextEditingController();
@@ -31,35 +37,43 @@ class _ConvertPageState extends State<ConvertPage> {
               size: 60,
             ),
             const SizedBox(height: 12),
-            TextField(
+            TextFieldCurr(
               controller: realController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: 'Real R\$',
-                  hintText: 'R\$',
-                  border: OutlineInputBorder()),
+              labelText: 'Real R\$',
+              prefix: 'R\$',
+              changedFunction: _realChanged,
             ),
             const SizedBox(height: 12),
-            TextField(
+            TextFieldCurr(
               controller: usdController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: 'Dolar \$',
-                  hintText: '\$',
-                  border: OutlineInputBorder()),
+              labelText: 'Dolar UD\$',
+              prefix: 'US\$',
+              changedFunction: _usdChanged,
             ),
             const SizedBox(height: 12),
-            TextField(
+            TextFieldCurr(
               controller: euroController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: 'Euro €',
-                  hintText: '€',
-                  border: OutlineInputBorder()),
+              labelText: 'Euro €',
+              prefix: '€',
+              changedFunction: _euroChanged,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _realChanged(value) {
+    double valueReal = double.parse(value);
+    usdController.text = (valueReal/priceUSD).toStringAsFixed(2);
+    euroController.text = (valueReal/priceEuro).toStringAsFixed(2);
+  }
+
+  void _usdChanged(value) {
+    double valueUSD = double.parse(value);
+  }
+
+  void _euroChanged(value) {
+    double valueEuro = double.parse(value);
   }
 }
