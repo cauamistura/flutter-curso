@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:currency_converter/widgets/edit_currency.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,7 @@ class ConvertPage extends StatefulWidget {
   final double priceEuro;
 
   @override
+  // ignore: no_logic_in_create_state
   State<ConvertPage> createState() => _ConvertPageState(priceUSD, priceEuro);
 }
 
@@ -64,16 +67,45 @@ class _ConvertPageState extends State<ConvertPage> {
   }
 
   void _realChanged(value) {
+    if (!_validateContent(value)) {
+      return;
+    }
     double valueReal = double.parse(value);
-    usdController.text = (valueReal/priceUSD).toStringAsFixed(2);
-    euroController.text = (valueReal/priceEuro).toStringAsFixed(2);
+    usdController.text = (valueReal / priceUSD).toStringAsFixed(2);
+    euroController.text = (valueReal / priceEuro).toStringAsFixed(2);
   }
 
   void _usdChanged(value) {
+    if (!_validateContent(value)) {
+      return;
+    }
     double valueUSD = double.parse(value);
+    realController.text = (valueUSD * priceUSD).toStringAsFixed(2);
+    euroController.text =
+        ((valueUSD * priceUSD) / priceEuro).toStringAsFixed(2);
   }
 
   void _euroChanged(value) {
+    if (!_validateContent(value)) {
+      return;
+    }
     double valueEuro = double.parse(value);
+    realController.text = (valueEuro * priceEuro).toStringAsFixed(2);
+    usdController.text =
+        ((valueEuro * priceEuro) / priceUSD).toStringAsFixed(2);
+  }
+
+  void _clearAll() {
+    realController.text = "";
+    usdController.text = "";
+    euroController.text = "";
+  }
+
+  bool _validateContent(String value) {
+    if (value.isEmpty) {
+      _clearAll();
+      return false;
+    }
+    return true;
   }
 }
