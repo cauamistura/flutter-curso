@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 
-class TableGifs extends StatefulWidget {
-  const TableGifs({super.key});
+class TableGifs extends StatelessWidget {
+  const TableGifs({
+    super.key,
+    required this.context,
+    required this.snapshot,
+  });
 
-  @override
-  State<TableGifs> createState() => _TableGifsState();
-}
+  final BuildContext context;
+  final AsyncSnapshot snapshot;
 
-class _TableGifsState extends State<TableGifs> {
+  Widget _createItemTable(context, index) {
+    return GestureDetector(
+      child: Image.network(
+        snapshot.data['data'][index]['images']['fixed_height']['url'],
+        height: 300,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return GridView.builder(
+      padding: const EdgeInsets.all(10),
+      itemCount: 20,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: _createItemTable,
+    );
   }
 }
