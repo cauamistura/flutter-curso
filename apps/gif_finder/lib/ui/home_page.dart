@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController controllerSearch = TextEditingController();
 
   String? _search;
-  int _offset = 0;
+  final int _offset = 0;
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onSubmittedSearch(String value) {
     setState(() {
-      if (value != null && value.isNotEmpty) {
+      if (value.isNotEmpty) {
         _search = value;
       } else if (value.isEmpty) {
         _search = null;
@@ -39,6 +39,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _search = null;
     });
+  }
+
+  void _clickButtonSearch() {
+    if (controllerSearch.text.isNotEmpty) {
+      _onSubmittedSearch(controllerSearch.text);
+    }
   }
 
   @override
@@ -71,12 +77,26 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: ElevatedButton(
-                    onPressed: _clickButtonClear,
-                    child: const Icon(Icons.cleaning_services),
-                  ),
-                )
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: _clickButtonSearch,
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(16.5),
+                              backgroundColor: Colors.black),
+                          child: const Icon(Icons.search),
+                        ),
+                        const SizedBox(width: 5),
+                        ElevatedButton(
+                          onPressed: _clickButtonClear,
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(16.5),
+                              backgroundColor: Colors.black),
+                          child: const Icon(Icons.cleaning_services),
+                        ),
+                      ],
+                    ))
               ],
             ),
           ),
