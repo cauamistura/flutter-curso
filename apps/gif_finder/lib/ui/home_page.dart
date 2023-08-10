@@ -89,7 +89,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(width: 5),
                         ElevatedButton(
-                          onPressed: _clickButtonClear,
+                          onPressed: controllerSearch.text.isNotEmpty
+                              ? _clickButtonClear
+                              : null,
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16.5),
                               backgroundColor: Colors.black),

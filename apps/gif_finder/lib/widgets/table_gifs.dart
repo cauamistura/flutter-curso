@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gif_finder/ui/gif_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 class TableGifs extends StatelessWidget {
   const TableGifs({
@@ -13,19 +14,20 @@ class TableGifs extends StatelessWidget {
 
   Widget _createItemTable(context, index) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    GifPage(gitData: snapshot.data['data'][index])));
-      },
-      child: Image.network(
-        snapshot.data['data'][index]['images']['fixed_height']['url'],
-        height: 300,
-        fit: BoxFit.cover,
-      ),
-    );
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      GifPage(gitData: snapshot.data['data'][index])));
+        },
+        onLongPress: () => Share.share(
+            snapshot.data['data'][index]['images']['fixed_height']['url']),
+        child: Image.network(
+          snapshot.data['data'][index]['images']['fixed_height']['url'],
+          height: 300,
+          fit: BoxFit.cover,
+        ));
   }
 
   @override
